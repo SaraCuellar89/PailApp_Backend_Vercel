@@ -103,32 +103,35 @@ const enviar_correo_vinculacion = async (destinatario, nombre) => {
 
 // Funcion para enviar correo de recuperacion de contraseña
 const enviar_correo_recuperacion = async (destinatario, nombre, token) => {
-    console.log("Intentando enviar correo a:", destinatario);
+  console.log("Intentando enviar correo a:", destinatario);
   console.log("BREVO_USER:", process.env.BREVO_USER);
   console.log("BREVO_FROM:", process.env.BREVO_FROM);
   console.log("BREVO_PASS:", process.env.BREVO_PASS ? "existe" : "NO EXISTE");
+  
   const mailOptions = {
     from: `"PailApp" <${process.env.BREVO_FROM}>`,
     to: destinatario,
     subject: "Recuperar contraseña",
     html: `
       <h2>¡Hola ${nombre}! :)</h2> 
-
       <p>Tu token para restablecer la contraseña es (válido por 1 hora):</p>
-
       <div style="text-align:center; background:#f4f4f4; padding:12px; font-size:18px; font-weight:bold; letter-spacing:2px;">
         ${token}
       </div>
-      
       <br> 
-      
       <p>Si no solicitaste esto, ignora este correo.</p>
-
-      <p style="font-size:12px; color:gray;"> Este es un mensaje automático, por favor no respondas a este correo. </p>
+      <p style="font-size:12px; color:gray;">Este es un mensaje automático, por favor no respondas a este correo.</p>
     `
   };
 
-  return await transporter.sendMail(mailOptions);
+  try {
+    const result = await transporter.sendMail(mailOptions);
+    console.log("Correo enviado exitosamente:", result.messageId);
+    return result;
+  } catch (error) {
+    console.log("ERROR al enviar correo:", error.message);
+    throw error;
+  }
 };
 
 
