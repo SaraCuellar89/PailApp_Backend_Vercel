@@ -47,19 +47,24 @@ const brevo = new BrevoClient({
 
 const enviar_email = async (destinatario, subject, htmlContent) => {
   console.log("Ejecutando enviar_email a:", destinatario);
-  try {
-    const result = await brevo.transactionalEmails.sendTransacEmail({
+  
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY
+    },
+    body: JSON.stringify({
       to: [{ email: destinatario }],
       sender: { email: process.env.BREVO_FROM, name: 'PailApp' },
       subject: subject,
       htmlContent: htmlContent
-    });
-    console.log("Correo enviado:", result);
-    return result;
-  } catch (error) {
-    console.log("ERROR enviar_email:", error.message);
-    throw error;
-  }
+    })
+  });
+
+  const data = await response.json();
+  console.log("Respuesta Brevo:", JSON.stringify(data));
+  return data;
 };
 
 // ================== Funciones para enviar correos ==================
