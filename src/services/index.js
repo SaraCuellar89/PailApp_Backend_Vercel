@@ -1,10 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { BrevoClient } = require('@getbrevo/brevo');
 
 const SECRET = process.env.JWT_SECRET;
-
-console.log("BREVO_API_KEY:", process.env.BREVO_API_KEY ? "existe" : "NO EXISTE");
 
 
 // ================== Funciones para la seguridad de las contraseñas ==================
@@ -41,10 +38,6 @@ const verificar_token = (token) => {
 
 
 // ================== Configurar Brevo API ==================
-const brevo = new BrevoClient({
-  apiKey: process.env.BREVO_API_KEY
-});
-
 const enviar_email = async (destinatario, subject, htmlContent) => {
   console.log("Ejecutando enviar_email a:", destinatario);
   
