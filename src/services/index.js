@@ -40,17 +40,22 @@ const verificar_token = (token) => {
 // ================== Funciones para enviar correos ==================
 // Configurar transporte
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  tls: {
+    rejectUnauthorized: false
+  },
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS
   }
 });
 
 // Función para enviar correo de registro
 const enviar_correo_registro = async (destinatario, nombre) => {
   const mailOptions = {
-    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    from: `"PailApp" <${process.env.BREVO_FROM}>`,
     to: destinatario,
     subject: "Registro exitoso",
     html: `
@@ -74,7 +79,7 @@ const enviar_correo_registro = async (destinatario, nombre) => {
 // Funcion para enviar correo de vinculacion con google
 const enviar_correo_vinculacion = async (destinatario, nombre) => {
   const mailOptions = {
-    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    from: `"PailApp" <${process.env.BREVO_FROM}>`,
     to: destinatario,
     subject: "Vinculación con Google Exitosa",
     html: `
@@ -99,7 +104,7 @@ const enviar_correo_vinculacion = async (destinatario, nombre) => {
 // Funcion para enviar correo de recuperacion de contraseña
 const enviar_correo_recuperacion = async (destinatario, nombre, token) => {
   const mailOptions = {
-    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    from: `"PailApp" <${process.env.BREVO_FROM}>`,
     to: destinatario,
     subject: "Recuperar contraseña",
     html: `
