@@ -40,6 +40,7 @@ const verificar_token = (token) => {
 // ================== Configurar Brevo API ==================
 const enviar_email = async (destinatario, subject, htmlContent) => {
   console.log("Ejecutando enviar_email a:", destinatario);
+  console.log("Haciendo fetch a Brevo...");
   
   const response = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
@@ -55,6 +56,7 @@ const enviar_email = async (destinatario, subject, htmlContent) => {
     })
   });
 
+  console.log("Respuesta status:", response.status);
   const data = await response.json();
   console.log("Respuesta Brevo:", JSON.stringify(data));
   return data;
