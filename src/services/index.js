@@ -4,6 +4,8 @@ const { BrevoClient } = require('@getbrevo/brevo');
 
 const SECRET = process.env.JWT_SECRET;
 
+console.log("BREVO_API_KEY:", process.env.BREVO_API_KEY ? "existe" : "NO EXISTE");
+
 
 // ================== Funciones para la seguridad de las contraseñas ==================
 // Encriptado de contraseñas
