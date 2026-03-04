@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodemailer = require("nodemailer");
 
 const SECRET = process.env.JWT_SECRET;
 
@@ -36,73 +37,96 @@ const verificar_token = (token) => {
 };
 
 
-
-// ================== Configurar Brevo API ==================
-const enviar_email = async (destinatario, subject, htmlContent) => {
-  console.log("Ejecutando enviar_email a:", destinatario);
-  console.log("Haciendo fetch a Brevo...");
-  
-  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': process.env.BREVO_API_KEY
-    },
-    body: JSON.stringify({
-      to: [{ email: destinatario }],
-      sender: { email: process.env.BREVO_FROM, name: 'PailApp' },
-      subject: subject,
-      htmlContent: htmlContent
-    })
-  });
-
-  console.log("Respuesta status:", response.status);
-  const data = await response.json();
-  console.log("Respuesta Brevo:", JSON.stringify(data));
-  return data;
-};
-
 // ================== Funciones para enviar correos ==================
+// Configurar transporte
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Función para enviar correo de registro
 const enviar_correo_registro = async (destinatario, nombre) => {
-  return await enviar_email(destinatario, "Registro exitoso", `
-    <h2>¡Hola ${nombre}! :)</h2>
-    <p>Te has registrado correctamente. Ya puedes comenzar a explorar todos los platos deliciosos que tenemos para ti.</p>
-    <div style="text-align:center;">
-      <img src="http://st.depositphotos.com/1001911/1554/v/450/depositphotos_15540341-stock-illustration-thumb-up-emoticon.jpg" alt="Todo listo" width="120">
-    </div>
-    <br>
-    <p style="font-size:12px; color:gray;">Este es un mensaje automático, por favor no respondas a este correo.</p>
-  `);
+  const mailOptions = {
+    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    to: destinatario,
+    subject: "Registro exitoso",
+    html: `
+      <h2>¡Hola ${nombre}! :)</h2> 
+
+      <p>Te has registro correctamente. Ya puedes comenzar a explorar todos los platos deliciosos que tenemos para ti.</p> 
+
+      <div style="text-align:center;"> 
+        <img src="http://st.depositphotos.com/1001911/1554/v/450/depositphotos_15540341-stock-illustration-thumb-up-emoticon.jpg" alt="Todo listo" width="120"> 
+      </div> 
+      
+      <br> 
+      
+      <p style="font-size:12px; color:gray;"> Este es un mensaje automático, por favor no respondas a este correo. </p>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
 };
 
+// Funcion para enviar correo de vinculacion con google
 const enviar_correo_vinculacion = async (destinatario, nombre) => {
-  return await enviar_email(destinatario, "Vinculación con Google Exitosa", `
-    <h2>¡Hola ${nombre}! :)</h2>
-    <p>Ya puedes iniciar sesión en PailApp por medio de Google.</p>
-    <div style="text-align:center;">
-      <img src="http://st.depositphotos.com/1001911/1554/v/450/depositphotos_15540341-stock-illustration-thumb-up-emoticon.jpg" alt="Todo listo" width="120">
-    </div>
-    <br>
-    <p style="font-size:12px; color:gray;">Este es un mensaje automático, por favor no respondas a este correo.</p>
-  `);
+  const mailOptions = {
+    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    to: destinatario,
+    subject: "Vinculación con Google Exitosa",
+    html: `
+      <h2>¡Hola ${nombre}! :)</h2> 
+
+      <p>Ya puedes iniciar sesion en PailApp por medio de google.</p> 
+
+      <div style="text-align:center;"> 
+        <img src="http://st.depositphotos.com/1001911/1554/v/450/depositphotos_15540341-stock-illustration-thumb-up-emoticon.jpg" alt="Todo listo" width="120"> 
+      </div> 
+      
+      <br> 
+      
+      <p style="font-size:12px; color:gray;"> Este es un mensaje automático, por favor no respondas a este correo. </p>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
 };
 
+
+// Funcion para enviar correo de recuperacion de contraseña
 const enviar_correo_recuperacion = async (destinatario, nombre, token) => {
-  return await enviar_email(destinatario, "Recuperar contraseña", `
-    <h2>¡Hola ${nombre}! :)</h2>
-    <p>Tu token para restablecer la contraseña es (válido por 1 hora):</p>
-    <div style="text-align:center; background:#f4f4f4; padding:12px; font-size:18px; font-weight:bold; letter-spacing:2px;">
-      ${token}
-    </div>
-    <br>
-    <p>Si no solicitaste esto, ignora este correo.</p>
-    <p style="font-size:12px; color:gray;">Este es un mensaje automático, por favor no respondas a este correo.</p>
-  `);
+  const mailOptions = {
+    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    to: destinatario,
+    subject: "Recuperar contraseña",
+    html: `
+      <h2>¡Hola ${nombre}! :)</h2> 
+
+      <p>Tu token para restablecer la contraseña es (válido por 1 hora):</p>
+
+      <div style="text-align:center; background:#f4f4f4; padding:12px; font-size:18px; font-weight:bold; letter-spacing:2px;">
+        ${token}
+      </div>
+      
+      <br> 
+      
+      <p>Si no solicitaste esto, ignora este correo.</p>
+
+      <p style="font-size:12px; color:gray;"> Este es un mensaje automático, por favor no respondas a este correo. </p>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
 };
+
+
 
 // ================== Exportar funciones ==================
 module.exports = {
-    encriptar_contrasena,
+    encriptar_contrasena, 
     comparar_contrasena,
     generar_token,
     verificar_token,
