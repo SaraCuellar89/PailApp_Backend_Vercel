@@ -103,6 +103,10 @@ const enviar_correo_vinculacion = async (destinatario, nombre) => {
 
 // Funcion para enviar correo de recuperacion de contraseña
 const enviar_correo_recuperacion = async (destinatario, nombre, token) => {
+    console.log("Intentando enviar correo a:", destinatario);
+  console.log("BREVO_USER:", process.env.BREVO_USER);
+  console.log("BREVO_FROM:", process.env.BREVO_FROM);
+  console.log("BREVO_PASS:", process.env.BREVO_PASS ? "existe" : "NO EXISTE");
   const mailOptions = {
     from: `"PailApp" <${process.env.BREVO_FROM}>`,
     to: destinatario,
