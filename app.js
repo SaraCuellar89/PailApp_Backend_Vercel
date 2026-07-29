@@ -3,14 +3,13 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const passport = require("passport")
 
+dotenv.config();
 
 // ================== Middlewares ==================
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-dotenv.config();
 
 app.use(cors({
     origin: "*",
@@ -61,9 +60,13 @@ app.use('/notificaciones', rutas_notificaciones);
 app.use('/filtros', rutas_filtros);
 
 
-// ================== Escucha del puerto (numero de puerto en .evn) ================== 
-const PORT = process.env.PORT || 3000;
+// ================== Escucha del puerto (numero de puerto en .evn) - Local ================== 
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+}
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+
+module.exports = app;
